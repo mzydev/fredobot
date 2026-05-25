@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: vpn_bot_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password_change_me
+      MYSQL_DATABASE: vpn_bot_db
+      MYSQL_USER: bot_user
+      MYSQL_PASSWORD: bot_password_change_me
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./src/database/schema.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - vpn_bot_network
+
+  bot:
+    build: .
+    container_name: vpn_bot_app
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN}
+      MYSQL_HOST: db
+      MYSQL_PORT: 3306
+      MYSQL_USER: bot_user
+      MYSQL_PASSWORD: bot_password_change_me
+      MYSQL_DATABASE: vpn_bot_db
+      ADMIN_IDS: ${ADMIN_IDS:-123456789}
+      PLAN_BRONZE_PRICE: 4.99
+      PLAN_BRONZE_DAYS: 30
+      PLAN_SILVER_PRICE: 12.99
+      PLAN_SILVER_DAYS: 90
+      PLAN_GOLD_PRICE: 24.99
+      PLAN_GOLD_DAYS: 180
+      NODE_ENV: production
+    restart: unless-stopped
+    networks:
+      - vpn_bot_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  db_data:
+    driver: local
+
+networks:
+  vpn_bot_network:
+    driver: bridge
