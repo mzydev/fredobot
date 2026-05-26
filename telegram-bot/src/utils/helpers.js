@@ -3,8 +3,8 @@ const formatCurrency = (amount) => {
 };
 
 const formatDate = (date) => {
-  if (!date) return 'N/A';
-  return new Date(date).toLocaleDateString('en-US', {
+  if (!date) return 'نامشخص';
+  return new Date(date).toLocaleDateString('fa-IR', {
     year: 'numeric',
     month: 'short',
     day: 'numeric'
@@ -12,8 +12,8 @@ const formatDate = (date) => {
 };
 
 const formatDateTime = (date) => {
-  if (!date) return 'N/A';
-  return new Date(date).toLocaleDateString('en-US', {
+  if (!date) return 'نامشخص';
+  return new Date(date).toLocaleDateString('fa-IR', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -63,19 +63,19 @@ const validateCryptoAddress = (address, cryptoType) => {
 const getPlanDetails = (planType) => {
   const plans = {
     bronze: {
-      name: '🥉 Bronze',
-      price: process.env.PLAN_BRONZE_PRICE || 4.99,
-      days: process.env.PLAN_BRONZE_DAYS || 30
+      name: '🥉 برنزی',
+      price: parseFloat(process.env.PLAN_BRONZE_PRICE) || 4.99,
+      days: parseInt(process.env.PLAN_BRONZE_DAYS) || 30
     },
     silver: {
-      name: '🥈 Silver',
-      price: process.env.PLAN_SILVER_PRICE || 12.99,
-      days: process.env.PLAN_SILVER_DAYS || 90
+      name: '🥈 نقره‌ای',
+      price: parseFloat(process.env.PLAN_SILVER_PRICE) || 12.99,
+      days: parseInt(process.env.PLAN_SILVER_DAYS) || 90
     },
     gold: {
-      name: '🥇 Gold',
-      price: process.env.PLAN_GOLD_PRICE || 24.99,
-      days: process.env.PLAN_GOLD_DAYS || 180
+      name: '🥇 طلایی',
+      price: parseFloat(process.env.PLAN_GOLD_PRICE) || 24.99,
+      days: parseInt(process.env.PLAN_GOLD_DAYS) || 180
     }
   };
   return plans[planType] || null;

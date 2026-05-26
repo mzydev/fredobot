@@ -23,7 +23,10 @@ class PaymentService {
     try {
       const connection = await pool.getConnection();
       const [payments] = await connection.query(
-        'SELECT * FROM payments WHERE id = ?',
+        `SELECT p.*, u.telegram_id, u.username, u.first_name 
+         FROM payments p
+         JOIN users u ON p.user_id = u.id
+         WHERE p.id = ?`,
         [paymentId]
       );
       await connection.release();
@@ -98,7 +101,11 @@ class PaymentService {
         const payment = await this.getPayment(paymentId);
         if (payment) {
           const userService = require('./userService');
-          await userService.updateBalance(payment.telegram_id || payment.user_id, payment.amount);
+          // Get user by user_id to find telegram_id
+          const user = await userService.getUserById(payment.user_id);
+          if (user) {
+            await userService.updateBalance(user.telegram_id, payment.amount);
+          }
         }
       }
 

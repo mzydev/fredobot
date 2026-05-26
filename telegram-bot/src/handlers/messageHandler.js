@@ -45,18 +45,31 @@ const messageHandler = {
       // Ensure user exists
       await userService.getOrCreateUser(ctx.from.id, ctx.from);
 
+      const text = ctx.message.text;
       const isAdmin = helpers.isAdmin(ctx.from.id, helpers.parseAdminIds(process.env.ADMIN_IDS));
 
-      if (isAdmin) {
-        // Check if admin is in admin menu context
+      // Check if this is an admin menu button
+      const adminButtons = ['➕ افزودن تنظیمات', '📊 آمار', '✅ تأیید پرداخت‌ها', '📢 ارسال پیام گروهی', '🔙 بازگشت به منوی کاربری'];
+      const userButtons = ['🛒 خرید تنظیمات', '📋 تنظیمات من', '👤 حساب من', '💰 افزایش موجودی', '🔐 پنل مدیریت', '❓ راهنمایی'];
+
+      // Check if user is in multi-step form
+      if (ctx.session && (ctx.session.addConfigStep || ctx.session.broadcastStep)) {
         await adminHandlers.handleText(ctx);
-      } else {
-        // Regular user
+        return;
+      }
+
+      // Route based on button pressed
+      if (adminButtons.includes(text) && isAdmin) {
+        await adminHandlers.handleText(ctx);
+      } else if (userButtons.includes(text)) {
         await userHandlers.handleText(ctx);
+      } else {
+        // Unknown text - show help message
+        await ctx.reply('دستور مفهومی نیست. لطفاً از منو استفاده کنید یا /help را بزنید.');
       }
     } catch (error) {
       console.error('[v0] Error in handleTextMessage:', error);
-      await ctx.reply('An error occurred. Please try again.');
+      await ctx.reply('خطایی رخ داده است. لطفاً دوباره تلاش کنید.');
     }
   },
 
@@ -80,12 +93,23 @@ const messageHandler = {
       else if (data === 'cancel') {
         await messageHandler.handleCancel(ctx);
       }
-      // Yes/No for broadcast
+      // Yes/No for purchase confirm and broadcast
       else if (data === 'yes') {
-        await messageHandler.handleBroadcastConfirm(ctx);
+        // Check if this is for purchase or broadcast
+        if (ctx.session && ctx.session.selectedPlan) {
+          await messageHandler.handleConfirm(ctx);
+        } else if (ctx.session && ctx.session.broadcastStep) {
+          await messageHandler.handleBroadcastConfirm(ctx);
+        } else {
+          await ctx.editMessageText('عملیات منقضی شده است. لطفاً دوباره تلاش کنید.');
+        }
       }
       else if (data === 'no') {
-        await messageHandler.handleBroadcastCancel(ctx);
+        if (ctx.session && ctx.session.broadcastStep) {
+          await messageHandler.handleBroadcastCancel(ctx);
+        } else {
+          await messageHandler.handleCancel(ctx);
+        }
       }
       // Payment approval/rejection
       else if (data.startsWith('approve_')) {
@@ -98,7 +122,7 @@ const messageHandler = {
       await ctx.answerCbQuery();
     } catch (error) {
       console.error('[v0] Error in handleCallbackQuery:', error);
-      await ctx.answerCbQuery('An error occurred');
+      await ctx.answerCbQuery('خطایی رخ داده است');
     }
   },
 
