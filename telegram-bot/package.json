@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/bot.js",
     "dev": "nodemon src/bot.js",
-    "setup-db": "node src/database/setup-sqlite.js"
+    "setup-db": "node src/database/setup.js"
   },
   "keywords": [
     "telegram",

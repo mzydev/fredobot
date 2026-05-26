@@ -1,8 +1,8 @@
 const { Telegraf, session } = require('telegraf');
 const dotenv = require('dotenv');
-const db = require('./config/database-sqlite');
+const { pool, testConnection } = require('./config/database');
 const messageHandler = require('./handlers/messageHandler');
-const purchaseService = require('./services/purchaseService-sqlite');
+const purchaseService = require('./services/purchaseService');
 
 // Load environment variables
 dotenv.config();
@@ -25,10 +25,7 @@ bot.use(session()); // Session middleware for storing state
 async function initializeBot() {
   try {
     console.log('[v0] Testing database connection...');
-    // Test SQLite connection
-    const stmt = db.prepare('SELECT 1');
-    stmt.get();
-    console.log('[v0] Database connection successful');
+    await testConnection();
 
     // Start listening for messages
     console.log('[v0] Starting Telegram bot...');
