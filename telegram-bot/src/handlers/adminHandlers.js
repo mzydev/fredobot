@@ -166,7 +166,7 @@ const adminHandlers = {
       case '🔙 Back to User Menu':
         // Return to user menu
         const user = await userService.getUser(ctx.from.id);
-        const balance = user?.balance || 0;
+        const balance = parseFloat(user?.balance) || 0;
         await ctx.reply(
           `Welcome back! You have $${balance.toFixed(2)} in your account.`,
           keyboards.mainMenuKeyboard()
