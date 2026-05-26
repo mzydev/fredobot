@@ -10,8 +10,9 @@ const userHandlers = {
   async start(ctx) {
     try {
       const user = await userService.getOrCreateUser(ctx.from.id, ctx.from);
+      const balance = user.balance || 0;
       
-      const welcomeText = `Welcome! 👋\n\nYou have $${user.balance.toFixed(2)} in your account.\n\nWhat would you like to do?`;
+      const welcomeText = `Welcome! 👋\n\nYou have $${balance.toFixed(2)} in your account.\n\nWhat would you like to do?`;
       await ctx.reply(welcomeText, userHandlers.mainMenuKeyboard());
     } catch (error) {
       console.error('[v0] Error in start:', error);
@@ -98,7 +99,7 @@ const userHandlers = {
       let message = '👤 Account Information\n\n';
       message += `Username: ${user.username || 'Not set'}\n`;
       message += `Telegram ID: ${user.telegram_id}\n`;
-      message += `Balance: $${user.balance.toFixed(2)}\n\n`;
+      message += `Balance: $${(user.balance || 0).toFixed(2)}\n\n`;
       message += `📊 Statistics:\n`;
       message += `Active Subscriptions: ${purchases.length}\n`;
       message += `Total Transactions: ${payments.length}\n`;

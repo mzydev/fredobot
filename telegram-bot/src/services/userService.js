@@ -7,7 +7,7 @@ class UserService {
       
       // Check if user exists
       const [existing] = await connection.query(
-        'SELECT id FROM users WHERE telegram_id = ?',
+        'SELECT id, telegram_id, username, first_name, balance, created_at FROM users WHERE telegram_id = ?',
         [telegramId]
       );
 
@@ -18,12 +18,19 @@ class UserService {
 
       // Create new user
       const [result] = await connection.query(
-        'INSERT INTO users (telegram_id, username, first_name) VALUES (?, ?, ?)',
-        [telegramId, userData.username || null, userData.first_name || null]
+        'INSERT INTO users (telegram_id, username, first_name, balance) VALUES (?, ?, ?, ?)',
+        [telegramId, userData.username || null, userData.first_name || null, 0]
       );
 
       await connection.release();
-      return { id: result.insertId };
+      return { 
+        id: result.insertId, 
+        telegram_id: telegramId,
+        username: userData.username || null,
+        first_name: userData.first_name || null,
+        balance: 0,
+        created_at: new Date()
+      };
     } catch (error) {
       console.error('[v0] Error in getOrCreateUser:', error);
       throw error;
