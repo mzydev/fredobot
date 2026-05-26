@@ -1,7 +1,7 @@
-const userService = require('../services/userService');
-const configService = require('../services/configService');
-const purchaseService = require('../services/purchaseService');
-const paymentService = require('../services/paymentService');
+const userService = require('../services/userService-sqlite');
+const configService = require('../services/configService-sqlite');
+const purchaseService = require('../services/purchaseService-sqlite');
+const paymentService = require('../services/paymentService-sqlite');
 const keyboards = require('../utils/keyboards');
 const helpers = require('../utils/helpers');
 
