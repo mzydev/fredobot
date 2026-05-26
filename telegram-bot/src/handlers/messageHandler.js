@@ -162,7 +162,7 @@ const messageHandler = {
       if (ctx.session.selectedPlan) {
         // Purchase flow
         const planDetails = helpers.getPlanDetails(ctx.session.selectedPlan);
-        const userBalance = user.balance || 0;
+        const userBalance = parseFloat(user.balance) || 0;
 
         if (userBalance < planDetails.price) {
           await ctx.editMessageText(

@@ -12,8 +12,13 @@ class UserService {
       );
 
       if (existing.length > 0) {
+        const user = existing[0];
+        // Convert balance to number (MySQL returns DECIMAL as object)
+        if (user.balance !== null && user.balance !== undefined) {
+          user.balance = parseFloat(user.balance);
+        }
         await connection.release();
-        return existing[0];
+        return user;
       }
 
       // Create new user
@@ -45,7 +50,15 @@ class UserService {
         [telegramId]
       );
       await connection.release();
-      return users.length > 0 ? users[0] : null;
+      if (users.length > 0) {
+        const user = users[0];
+        // Convert balance to number (MySQL returns DECIMAL as object)
+        if (user.balance !== null && user.balance !== undefined) {
+          user.balance = parseFloat(user.balance);
+        }
+        return user;
+      }
+      return null;
     } catch (error) {
       console.error('[v0] Error in getUser:', error);
       throw error;
@@ -60,7 +73,15 @@ class UserService {
         [userId]
       );
       await connection.release();
-      return users.length > 0 ? users[0] : null;
+      if (users.length > 0) {
+        const user = users[0];
+        // Convert balance to number (MySQL returns DECIMAL as object)
+        if (user.balance !== null && user.balance !== undefined) {
+          user.balance = parseFloat(user.balance);
+        }
+        return user;
+      }
+      return null;
     } catch (error) {
       console.error('[v0] Error in getUserById:', error);
       throw error;
@@ -102,7 +123,13 @@ class UserService {
       const connection = await pool.getConnection();
       const [users] = await connection.query('SELECT * FROM users');
       await connection.release();
-      return users;
+      // Convert balance to number for all users
+      return users.map(user => {
+        if (user.balance !== null && user.balance !== undefined) {
+          user.balance = parseFloat(user.balance);
+        }
+        return user;
+      });
     } catch (error) {
       console.error('[v0] Error in getAllUsers:', error);
       throw error;
