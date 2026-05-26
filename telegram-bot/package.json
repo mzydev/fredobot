@@ -20,6 +20,7 @@
     "better-sqlite3": "^12.10.0",
     "dotenv": "^16.3.1",
     "mysql2": "^3.6.5",
+    "sql.js": "^1.14.1",
     "telegraf": "^4.14.1"
   },
   "devDependencies": {

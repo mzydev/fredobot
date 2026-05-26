@@ -66,16 +66,16 @@ async function initializeBot() {
           delete ctx.session.awaitingTxid;
           delete ctx.session.cryptoType;
 
-          const message = `💰 Payment Request Submitted\n\n` +
-            `Amount: $${topupAmount.toFixed(2)}\n` +
-            `Cryptocurrency: ${cryptoType}\n` +
-            `Transaction ID: ${txid}\n\n` +
-            `Your payment is pending admin approval. You will be notified once it's processed.`;
+          const message = `💰 درخواست پرداخت ارسال شد\n\n` +
+            `مبلغ: $${topupAmount.toFixed(2)}\n` +
+            `رمزارز: ${cryptoType}\n` +
+            `شناسه تراکنش: ${txid}\n\n` +
+            `پرداخت شما در انتظار تأیید مدیر است. پس از پردازش مطلع خواهید شد.`;
 
           await ctx.reply(message);
         } catch (error) {
           console.error('[v0] Error processing TXID:', error);
-          await ctx.reply('An error occurred. Please try again.');
+          await ctx.reply('خطایی رخ داده است. لطفاً دوباره تلاش کنید.');
         }
         return;
       }

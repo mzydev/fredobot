@@ -35,7 +35,7 @@ const messageHandler = {
         await adminHandlers.adminMenu(ctx);
         break;
       default:
-        await ctx.reply('Unknown command. Type /help for available commands.');
+        await ctx.reply('دستور نامشخص. برای مشاهده دستورات /help را تایپ کنید.');
     }
   },
 
@@ -113,14 +113,14 @@ const messageHandler = {
 
       const configs = await configService.getAllConfigs(true);
       if (configs.length === 0) {
-        await ctx.editMessageText('No configs available.');
+        await ctx.editMessageText('تنظیماتی موجود نیست.');
         return;
       }
 
-      let message = `You selected: ${planDetails.name}\n`;
-      message += `Price: ${helpers.formatCurrency(planDetails.price)}\n`;
-      message += `Duration: ${planDetails.days} days\n\n`;
-      message += `Do you want to proceed with the purchase?`;
+      let message = `شما انتخاب کردید: ${planDetails.name}\n`;
+      message += `قیمت: ${helpers.formatCurrency(planDetails.price)}\n`;
+      message += `مدت زمان: ${planDetails.days} روز\n\n`;
+      message += `می‌خواهید خریدتان را انجام دهید؟`;
 
       await ctx.editMessageText(message, keyboards.yesNoKeyboard());
     } catch (error) {
@@ -139,11 +139,11 @@ const messageHandler = {
       // Generate a crypto address (in production, use actual wallet service)
       const cryptoAddress = `${cryptoType}_ADDRESS_1A2B3C4D5E6F...`;
 
-      let message = `💳 Add Balance\n\n`;
-      message += `Cryptocurrency: ${cryptoType}\n`;
-      message += `Send your payment to:\n\n`;
+      let message = `💳 افزایش موجودی\n\n`;
+      message += `رمزارز: ${cryptoType}\n`;
+      message += `پرداخت خود را به این آدرس ارسال کنید:\n\n`;
       message += `\`${cryptoAddress}\`\n\n`;
-      message += `After sending, reply with your transaction ID (TXID)`;
+      message += `پس از ارسال، شناسه تراکنش (TXID) خود را به من بفرستید`;
 
       await ctx.editMessageText(message, { parse_mode: 'Markdown' });
 
@@ -166,10 +166,10 @@ const messageHandler = {
 
         if (userBalance < planDetails.price) {
           await ctx.editMessageText(
-            `❌ Insufficient balance.\n\n` +
-            `Required: ${helpers.formatCurrency(planDetails.price)}\n` +
-            `Your balance: ${helpers.formatCurrency(userBalance)}\n\n` +
-            `Use /addbalance to top up your account.`
+            `❌ موجودی ناکافی.\n\n` +
+            `مورد نیاز: ${helpers.formatCurrency(planDetails.price)}\n` +
+            `موجودی شما: ${helpers.formatCurrency(userBalance)}\n\n` +
+            `برای شارژ حساب از /addbalance استفاده کنید.`
           );
           delete ctx.session.selectedPlan;
           return;
@@ -183,12 +183,12 @@ const messageHandler = {
         await userService.deductBalance(ctx.from.id, planDetails.price);
 
         await ctx.editMessageText(
-          `✅ Purchase Successful!\n\n` +
-          `Plan: ${planDetails.name}\n` +
-          `Cost: ${helpers.formatCurrency(planDetails.price)}\n` +
-          `Duration: ${planDetails.days} days\n\n` +
-          `Your new balance: ${helpers.formatCurrency(userBalance - planDetails.price)}\n\n` +
-          `Use /myconfigs to view your configuration.`
+          `✅ خریدتان موفق بود!\n\n` +
+          `پلن: ${planDetails.name}\n` +
+          `هزینه: ${helpers.formatCurrency(planDetails.price)}\n` +
+          `مدت زمان: ${planDetails.days} روز\n\n` +
+          `موجودی جدید شما: ${helpers.formatCurrency(userBalance - planDetails.price)}\n\n` +
+          `برای مشاهده تنظیمات از /myconfigs استفاده کنید.`
         );
 
         delete ctx.session.selectedPlan;
@@ -201,7 +201,7 @@ const messageHandler = {
   // Handle cancel
   async handleCancel(ctx) {
     try {
-      await ctx.editMessageText('❌ Cancelled.');
+      await ctx.editMessageText('❌ لغو شد.');
       delete ctx.session;
     } catch (error) {
       console.error('[v0] Error in handleCancel:', error);
@@ -214,7 +214,7 @@ const messageHandler = {
       ctx.session = ctx.session || {};
       
       if (!ctx.session.broadcastMessage) {
-        await ctx.editMessageText('No message to broadcast.');
+        await ctx.editMessageText('پیامی برای ارسال وجود ندارد.');
         return;
       }
 
@@ -233,9 +233,9 @@ const messageHandler = {
       }
 
       await ctx.editMessageText(
-        `📢 Broadcast Complete\n\n` +
-        `Sent: ${successCount}\n` +
-        `Failed: ${failCount}`
+        `📢 ارسال گروهی تکمیل شد\n\n` +
+        `ارسال شده: ${successCount}\n` +
+        `ناموفق: ${failCount}`
       );
 
       delete ctx.session.broadcastMessage;
@@ -248,7 +248,7 @@ const messageHandler = {
   // Handle broadcast cancellation
   async handleBroadcastCancel(ctx) {
     try {
-      await ctx.editMessageText('❌ Broadcast cancelled.');
+      await ctx.editMessageText('❌ ارسال گروهی لغو شد.');
       delete ctx.session;
     } catch (error) {
       console.error('[v0] Error in handleBroadcastCancel:', error);
@@ -262,7 +262,7 @@ const messageHandler = {
       const payment = await paymentService.getPayment(paymentId);
 
       if (!payment) {
-        await ctx.editMessageText('❌ Payment not found.');
+        await ctx.editMessageText('❌ پرداخت یافت نشد.');
         return;
       }
 
@@ -272,16 +272,16 @@ const messageHandler = {
       try {
         await ctx.telegram.sendMessage(
           payment.telegram_id,
-          `✅ Payment Approved!\n\n` +
-          `Amount: ${helpers.formatCurrency(payment.amount)} ${payment.crypto_type}\n` +
-          `Your new balance: $0.00\n\n` +
-          `Use /addbalance to check your updated balance.`
+          `✅ پرداخت تأیید شد!\n\n` +
+          `مبلغ: ${helpers.formatCurrency(payment.amount)} ${payment.crypto_type}\n` +
+          `موجودی جدید شما: $0.00\n\n` +
+          `برای بررسی موجودی جدید از /addbalance استفاده کنید.`
         );
       } catch (err) {
         console.error('[v0] Failed to notify user:', err);
       }
 
-      await ctx.editMessageText('✅ Payment approved successfully!');
+      await ctx.editMessageText('✅ پرداخت با موفقیت تأیید شد!');
     } catch (error) {
       console.error('[v0] Error in handlePaymentApproval:', error);
     }
@@ -292,9 +292,9 @@ const messageHandler = {
     try {
       const paymentId = parseInt(data.replace('reject_', ''));
       
-      await paymentService.rejectPayment(paymentId, 'Rejected by admin');
+      await paymentService.rejectPayment(paymentId, 'رد شده توسط مدیر');
 
-      await ctx.editMessageText('❌ Payment rejected.');
+      await ctx.editMessageText('❌ پرداخت رد شد.');
     } catch (error) {
       console.error('[v0] Error in handlePaymentRejection:', error);
     }
